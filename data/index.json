@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "updated_at": 1790789204,
+  "encryption": {
+    "algo": "AES-GCM",
+    "iterations": 200000
+  },
+  "novels": [
+    {
+      "slug": "desolate-era",
+      "title": "Desolate Era",
+      "author": "I Eat Tomatoes",
+      "translator": "RWX & Deathblade",
+      "synopsis": "Fate had never been kind to Ji Ning. Wracked by illnesses and infirm his entire life on Earth, Ji Ning knew early on that he was doomed for an early death. But when a chance meeting with a stranger from another world would open up a path for him to become an immortal, Ji Ning embarked on the road less traveled.",
+      "cover_url": "https://images.novelping.com/novel/desolate-era.jpg",
+      "source": "novelping.com",
+      "chapter_count": 1451,
+      "first_chapter_slug": "chapter-book-1-1-the-land-of-the-dead",
+      "last_chapter_slug": "chapter-desolate-era-afterword",
+      "db_file": "novels/desolate-era.db.enc",
+      "db_bytes": 7831610,
+      "updated_at": 1790768902,
+      "encrypted": true
+    }
+  ]
+}

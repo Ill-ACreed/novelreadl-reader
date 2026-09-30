@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#14140f" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfaf7" />
+    <title>novelreadl · personal reader</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='28' font-family='serif'%3E✦%3C/text%3E%3C/svg%3E" />
+
+    <!--
+      Critical CSS inlined so there's ZERO flash of unstyled content on any
+      route change. The full stylesheet loads afterwards and adds everything
+      else (typography, controls, etc). Keep this in sync with global.css.
+    -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #14140f;
+        --bg-elev: #1c1c17;
+        --ink: #e9e3d5;
+      }
+      :root[data-theme="light"] {
+        --bg: #fbfaf7; --bg-elev: #ffffff; --ink: #1a1613;
+      }
+      :root[data-theme="sepia"] {
+        --bg: #f4ecd8; --bg-elev: #f9f2e0; --ink: #40332a;
+      }
+      :root[data-theme="dark"] {
+        --bg: #14140f; --bg-elev: #1c1c17; --ink: #e9e3d5;
+      }
+      :root[data-theme="black"] {
+        --bg: #000000; --bg-elev: #0c0c0c; --ink: #dedbd2;
+      }
+      :root[data-font="sans"] {
+        --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      :root[data-font="mono"] {
+        --font-body: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: light) {
+        :root:not([data-theme]) {
+          --bg: #fbfaf7; --bg-elev: #ffffff; --ink: #1a1613;
+        }
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100dvh;
+      }
+      /* Hide app skeleton until the JS bundle mounts something — no
+         flash of empty header/toolbars either. */
+      #app:empty::before {
+        content: "";
+        display: block;
+        min-height: 100dvh;
+        background: var(--bg);
+      }
+    </style>
+
+    <script>
+      // Apply saved theme + font + scale BEFORE anything paints. The <style> above
+      // means the bg is already correct for the default (dark or system);
+      // this just overrides when the user has explicitly picked a theme.
+      (function () {
+        try {
+          var t = localStorage.getItem("de-theme");
+          var s = localStorage.getItem("de-scale");
+          var l = localStorage.getItem("de-leading");
+          var f = localStorage.getItem("de-font");
+          if (t) document.documentElement.setAttribute("data-theme", t);
+          if (s) document.documentElement.style.setProperty("--scale", s);
+          if (l) document.documentElement.style.setProperty("--leading", l);
+          if (f) document.documentElement.setAttribute("data-font", f);
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="/novelreadl-reader/assets/index-BA8iFps0.js"></script>
+    <link rel="modulepreload" crossorigin href="/novelreadl-reader/assets/sqljs-BBmO1gmF.js">
+    <link rel="stylesheet" crossorigin href="/novelreadl-reader/assets/index-CokRvywH.css">
+  </head>
+  <body>
+    <div id="warmth-overlay" aria-hidden="true"></div>
+    <header class="top" id="chrome-top" style="display:none">
+      <a href="/novelreadl-reader/" class="brand" data-route>Novel<em>readl</em></a>
+      <nav>
+        <a href="/novelreadl-reader/emergency" id="nav-emergency" data-route style="display:none">Emergency</a>
+        <button class="controls-toggle" id="controls-toggle" aria-label="Reading settings" title="Settings (s)">Aa</button>
+      </nav>
+    </header>
+    <div id="controls-scrim" data-open="0"></div>
+    <aside class="controls" id="controls" role="dialog" aria-label="Reading settings" aria-modal="true">
+      <div class="sheet-grab-bar"></div>
+      <div class="head">
+        <h3>Reading Settings</h3>
+        <button class="close" id="controls-close" aria-label="Close settings">✕</button>
+      </div>
+
+      <div class="group">
+        <h4>Theme</h4>
+        <div class="row row--themes" data-role="theme">
+          <button data-value="light" class="theme-btn theme-btn--light"><span class="swatch"></span>Light</button>
+          <button data-value="sepia" class="theme-btn theme-btn--sepia"><span class="swatch"></span>Sepia</button>
+          <button data-value="dark" class="theme-btn theme-btn--dark"><span class="swatch"></span>Dark</button>
+          <button data-value="black" class="theme-btn theme-btn--black"><span class="swatch"></span>OLED</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h4>Font Family</h4>
+        <div class="row" data-role="font">
+          <button data-value="serif" style="font-family:serif">Serif</button>
+          <button data-value="sans" style="font-family:sans-serif">Sans</button>
+          <button data-value="mono" style="font-family:monospace">Mono</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h4>Reading Mode</h4>
+        <div class="row" data-role="mode">
+          <button data-value="paginated">Paginated</button>
+          <button data-value="continuous">Continuous</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-header">
+          <h4>Text size</h4>
+          <div class="stepper">
+            <button type="button" id="btn-scale-down" aria-label="Decrease text size">A−</button>
+            <button type="button" id="btn-scale-up" aria-label="Increase text size">A+</button>
+          </div>
+        </div>
+        <div class="slider">
+          <input class="track" type="range" data-slider="scale" min="0.8" max="1.5" step="0.05" />
+          <span class="val" id="val-scale">1.00</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h4>Line spacing</h4>
+        <div class="slider">
+          <input class="track" type="range" data-slider="leading" min="1.35" max="2.2" step="0.05" />
+          <span class="val" id="val-leading">1.75</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h4>Column width</h4>
+        <div class="slider">
+          <input class="track" type="range" data-slider="measure" min="26" max="52" step="1" />
+          <span class="val" id="val-measure">34</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h4>Brightness</h4>
+        <div class="slider">
+          <input class="track" type="range" data-slider="brightness" min="0.55" max="1" step="0.01" />
+          <span class="val" id="val-brightness">100</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h4>Warmth</h4>
+        <div class="slider">
+          <input class="track" type="range" data-slider="warmth" min="0" max="1" step="0.02" />
+          <span class="val" id="val-warmth">0</span>
+        </div>
+      </div>
+
+      <div class="kbd-hints">
+        <div><kbd>←</kbd><kbd>→</kbd> prev/next chapter · <kbd>Esc</kbd> close</div>
+        <div><kbd>s</kbd> settings · <kbd>g</kbd> contents · <kbd>h</kbd> home</div>
+        <div style="margin-top:.4rem">Tap anywhere on the page to open the reader controls.</div>
+      </div>
+    </aside>
+    <div class="loading" id="loading"><span class="dot"></span><span id="loading-text">Loading…</span></div>
+    <main id="app"></main>
+  </body>
+</html>
